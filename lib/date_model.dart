@@ -42,6 +42,7 @@ abstract class BasePickerModel {
   //layout proportions for 3 columns
   List<int> layoutProportions();
 }
+
 //a base class for picker data model
 class CommonPickerModel extends BasePickerModel {
   late List<String> leftList;
@@ -119,6 +120,7 @@ class CommonPickerModel extends BasePickerModel {
     return null;
   }
 }
+
 //a date picker model
 class DatePickerModel extends CommonPickerModel {
   late DateTime maxTime;
@@ -195,7 +197,7 @@ class DatePickerModel extends CommonPickerModel {
     int maxDay = _maxDayOfCurrentMonth();
     int minDay = _minDayOfCurrentMonth();
     rightList = List.generate(maxDay - minDay + 1, (int index) {
-      return '${minDay + index}日}';
+      return '${minDay + index}日';
     });
   }
 
@@ -433,7 +435,7 @@ class LunarPickerModel extends CommonPickerModel {
     // print("--${lunarMonths.length}");
     // 因为农历月份中有闰月所以需要遍历当前所有月份进行查找
     for (var i = 0, j = lunarMonths.length; i < j; i++) {
-      print(lunarMonths[i].toString());
+      // print(lunarMonths[i].toString());
       if (lunarMonths[i].getYear() == currentLunarTime.getYear()) {
         if (currentLunarTime.getYear() == minLunarTime.getYear()) {
           if (i >= minMonth + 1) {

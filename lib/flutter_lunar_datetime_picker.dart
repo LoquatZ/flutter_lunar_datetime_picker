@@ -34,11 +34,6 @@ class DatePicker {
         theme: theme,
         barrierLabel:
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
-        pickerModel: LunarPickerModel(
-          currentTime: currentTime,
-          maxTime: maxTime,
-          minTime: minTime,
-        ),
       ),
     );
   }
@@ -53,9 +48,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     DatePickerTheme? theme,
     this.barrierLabel,
     RouteSettings? settings,
-    BasePickerModel? pickerModel,
-  })  : pickerModel = pickerModel ?? DatePickerModel(),
-        theme = theme ?? const DatePickerTheme(),
+  })  : theme = theme ?? const DatePickerTheme(),
         super(settings: settings);
 
   final bool? showTitleActions;
@@ -63,7 +56,6 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final DateChangedCallback? onConfirm;
   final DateCancelledCallback? onCancel;
   final DatePickerTheme theme;
-  final BasePickerModel pickerModel;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -96,7 +88,6 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       child: _DatePickerComponent(
         onChanged: onChanged,
         route: this,
-        pickerModel: pickerModel,
       ),
     );
     return InheritedTheme.captureAll(context, bottomSheet);
@@ -107,15 +98,12 @@ class _DatePickerComponent extends StatefulWidget {
   const _DatePickerComponent({
     Key? key,
     required this.route,
-    required this.pickerModel,
     this.onChanged,
   }) : super(key: key);
 
   final DateChangedCallback? onChanged;
 
   final _DatePickerRoute route;
-
-  final BasePickerModel pickerModel;
 
   @override
   State<StatefulWidget> createState() {
@@ -127,21 +115,48 @@ class _DatePickerState extends State<_DatePickerComponent> {
   late FixedExtentScrollController leftScrollCtrl,
       middleScrollCtrl,
       rightScrollCtrl;
+
+  // 是否阴历
   bool lunarPicker = false;
+
+  BasePickerModel pickerModel = DatePickerModel(
+      // currentTime: currentTime,
+      // maxTime: maxTime,
+      // minTime: minTime,
+      );
+
   @override
   void initState() {
     super.initState();
     refreshScrollOffset();
   }
 
+  void onLunarChange(bool lunarPicker) {
+    setState(() {
+      this.lunarPicker = lunarPicker;
+      pickerModel = lunarPicker
+          ? LunarPickerModel(currentTime: pickerModel.finalTime())
+          : DatePickerModel(currentTime: pickerModel.finalTime());
+    });
+    refreshScrollOffset();
+  }
+
   void refreshScrollOffset() {
 //    print('refreshScrollOffset ${widget.pickerModel.currentRightIndex()}');
     leftScrollCtrl = FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentLeftIndex());
+        initialItem: pickerModel.currentLeftIndex());
     middleScrollCtrl = FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentMiddleIndex());
+        initialItem: pickerModel.currentMiddleIndex());
     rightScrollCtrl = FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentRightIndex());
+        initialItem: pickerModel.currentRightIndex());
+  }
+
+  @override
+  void dispose() {
+    leftScrollCtrl.dispose();
+    middleScrollCtrl.dispose();
+    rightScrollCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -175,7 +190,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   void _notifyDateChanged() {
     if (widget.onChanged != null) {
-      widget.onChanged!(widget.pickerModel.finalTime()!);
+      widget.onChanged!(pickerModel.finalTime()!);
     }
   }
 
@@ -258,14 +273,14 @@ class _DatePickerState extends State<_DatePickerComponent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              child: widget.pickerModel.layoutProportions()[0] > 0
+              child: pickerModel.layoutProportions()[0] > 0
                   ? _renderColumnView(
-                      ValueKey(widget.pickerModel.currentLeftIndex()),
+                      ValueKey(pickerModel.currentLeftIndex()),
                       theme,
-                      widget.pickerModel.leftStringAtIndex,
+                      pickerModel.leftStringAtIndex,
                       leftScrollCtrl,
-                      widget.pickerModel.layoutProportions()[0], (index) {
-                      widget.pickerModel.setLeftIndex(index);
+                      pickerModel.layoutProportions()[0], (index) {
+                      pickerModel.setLeftIndex(index);
                     }, (index) {
                       setState(() {
                         refreshScrollOffset();
@@ -275,18 +290,18 @@ class _DatePickerState extends State<_DatePickerComponent> {
                   : null,
             ),
             Text(
-              widget.pickerModel.leftDivider(),
+              pickerModel.leftDivider(),
               style: theme.itemStyle,
             ),
             Container(
-              child: widget.pickerModel.layoutProportions()[1] > 0
+              child: pickerModel.layoutProportions()[1] > 0
                   ? _renderColumnView(
-                      ValueKey(widget.pickerModel.currentLeftIndex()),
+                      ValueKey(pickerModel.currentLeftIndex()),
                       theme,
-                      widget.pickerModel.middleStringAtIndex,
+                      pickerModel.middleStringAtIndex,
                       middleScrollCtrl,
-                      widget.pickerModel.layoutProportions()[1], (index) {
-                      widget.pickerModel.setMiddleIndex(index);
+                      pickerModel.layoutProportions()[1], (index) {
+                      pickerModel.setMiddleIndex(index);
                     }, (index) {
                       setState(() {
                         refreshScrollOffset();
@@ -296,19 +311,19 @@ class _DatePickerState extends State<_DatePickerComponent> {
                   : null,
             ),
             Text(
-              widget.pickerModel.rightDivider(),
+              pickerModel.rightDivider(),
               style: theme.itemStyle,
             ),
             Container(
-              child: widget.pickerModel.layoutProportions()[2] > 0
+              child: pickerModel.layoutProportions()[2] > 0
                   ? _renderColumnView(
-                      ValueKey(widget.pickerModel.currentMiddleIndex() * 100 +
-                          widget.pickerModel.currentLeftIndex()),
+                      ValueKey(pickerModel.currentMiddleIndex() * 100 +
+                          pickerModel.currentLeftIndex()),
                       theme,
-                      widget.pickerModel.rightStringAtIndex,
+                      pickerModel.rightStringAtIndex,
                       rightScrollCtrl,
-                      widget.pickerModel.layoutProportions()[2], (index) {
-                      widget.pickerModel.setRightIndex(index);
+                      pickerModel.layoutProportions()[2], (index) {
+                      pickerModel.setRightIndex(index);
                     }, (index) {
                       setState(() {
                         refreshScrollOffset();
@@ -362,9 +377,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               children: [
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      lunarPicker = false;
-                    });
+                    onLunarChange(false);
                   },
                   style: ButtonStyle(
                       padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -383,9 +396,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
                 ),
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      lunarPicker = true;
-                    });
+                    onLunarChange(true);
                   },
                   style: ButtonStyle(
                       padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -414,9 +425,9 @@ class _DatePickerState extends State<_DatePickerComponent> {
                 style: theme.doneStyle,
               ),
               onPressed: () {
-                Navigator.pop(context, widget.pickerModel.finalTime());
+                Navigator.pop(context, pickerModel.finalTime());
                 if (widget.route.onConfirm != null) {
-                  widget.route.onConfirm!(widget.pickerModel.finalTime()!);
+                  widget.route.onConfirm!(pickerModel.finalTime()!);
                 }
               },
             ),
