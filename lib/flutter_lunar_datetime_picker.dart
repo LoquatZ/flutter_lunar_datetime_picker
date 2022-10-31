@@ -2,6 +2,7 @@ library flutter_lunar_datetime_picker;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lunar_datetime_picker/date_init.dart';
 import 'package:flutter_lunar_datetime_picker/date_model.dart';
 import 'package:flutter_lunar_datetime_picker/datetime_picker_theme.dart';
 
@@ -23,6 +24,8 @@ class DatePicker {
     DateCancelledCallback? onCancel,
     DateTime? currentTime,
     DatePickerTheme? theme,
+    bool? lunarPicker,
+    DateInitTime? dateInitTime,
   }) async {
     return await Navigator.push(
       context,
@@ -32,6 +35,8 @@ class DatePicker {
         onConfirm: onConfirm,
         onCancel: onCancel,
         theme: theme,
+        lunarPicker: lunarPicker,
+        dateInitTime: dateInitTime,
         barrierLabel:
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
       ),
@@ -45,7 +50,9 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.onChanged,
     this.onConfirm,
     this.onCancel,
+    this.lunarPicker,
     DatePickerTheme? theme,
+    this.dateInitTime,
     this.barrierLabel,
     RouteSettings? settings,
   })  : theme = theme ?? const DatePickerTheme(),
@@ -56,6 +63,8 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final DateChangedCallback? onConfirm;
   final DateCancelledCallback? onCancel;
   final DatePickerTheme theme;
+  final bool? lunarPicker;
+  final DateInitTime? dateInitTime;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -88,6 +97,8 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       child: _DatePickerComponent(
         onChanged: onChanged,
         route: this,
+        lunarPicker: lunarPicker ?? false,
+        dateInitTime: dateInitTime,
       ),
     );
     return InheritedTheme.captureAll(context, bottomSheet);
@@ -99,11 +110,17 @@ class _DatePickerComponent extends StatefulWidget {
     Key? key,
     required this.route,
     this.onChanged,
+    required this.lunarPicker,
+    required this.dateInitTime,
   }) : super(key: key);
 
   final DateChangedCallback? onChanged;
 
   final _DatePickerRoute route;
+
+  final bool lunarPicker;
+
+  final DateInitTime? dateInitTime;
 
   @override
   State<StatefulWidget> createState() {
@@ -114,20 +131,30 @@ class _DatePickerComponent extends StatefulWidget {
 class _DatePickerState extends State<_DatePickerComponent> {
   late FixedExtentScrollController leftScrollCtrl,
       middleScrollCtrl,
-      rightScrollCtrl;
+      rightScrollCtrl,
+      hourScrollCtrl,
+      minuteScrollCtrl;
 
-  // 是否阴历
   bool lunarPicker = false;
 
-  BasePickerModel pickerModel = DatePickerModel(
-      // currentTime: currentTime,
-      // maxTime: maxTime,
-      // minTime: minTime,
-      );
+  late BasePickerModel pickerModel;
 
   @override
   void initState() {
     super.initState();
+    // 是否阴历
+    lunarPicker = widget.lunarPicker;
+    if (lunarPicker) {
+      pickerModel = LunarPickerModel(
+          currentTime: widget.dateInitTime?.currentTime,
+          maxTime: widget.dateInitTime?.maxTime,
+          minTime: widget.dateInitTime?.minTime);
+    } else {
+      pickerModel = DatePickerModel(
+          currentTime: widget.dateInitTime?.currentTime,
+          maxTime: widget.dateInitTime?.maxTime,
+          minTime: widget.dateInitTime?.minTime);
+    }
     refreshScrollOffset();
   }
 
@@ -135,8 +162,14 @@ class _DatePickerState extends State<_DatePickerComponent> {
     setState(() {
       this.lunarPicker = lunarPicker;
       pickerModel = lunarPicker
-          ? LunarPickerModel(currentTime: pickerModel.finalTime())
-          : DatePickerModel(currentTime: pickerModel.finalTime());
+          ? LunarPickerModel(
+              currentTime: pickerModel.finalTime(),
+              maxTime: widget.dateInitTime?.maxTime,
+              minTime: widget.dateInitTime?.minTime)
+          : DatePickerModel(
+              currentTime: pickerModel.finalTime(),
+              maxTime: widget.dateInitTime?.maxTime,
+              minTime: widget.dateInitTime?.minTime);
     });
     refreshScrollOffset();
   }
@@ -149,6 +182,10 @@ class _DatePickerState extends State<_DatePickerComponent> {
         initialItem: pickerModel.currentMiddleIndex());
     rightScrollCtrl = FixedExtentScrollController(
         initialItem: pickerModel.currentRightIndex());
+    hourScrollCtrl = FixedExtentScrollController(
+        initialItem: pickerModel.currentHourIndex());
+    minuteScrollCtrl = FixedExtentScrollController(
+        initialItem: pickerModel.currentMinuteIndex());
   }
 
   @override
@@ -156,6 +193,8 @@ class _DatePickerState extends State<_DatePickerComponent> {
     leftScrollCtrl.dispose();
     middleScrollCtrl.dispose();
     rightScrollCtrl.dispose();
+    hourScrollCtrl.dispose();
+    minuteScrollCtrl.dispose();
     super.dispose();
   }
 
@@ -219,7 +258,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
     return Expanded(
       flex: layoutProportion,
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        // padding: const EdgeInsets.all(2.0),
         height: theme.containerHeight,
         decoration: BoxDecoration(color: theme.backgroundColor),
         child: NotificationListener(
@@ -324,6 +363,50 @@ class _DatePickerState extends State<_DatePickerComponent> {
                       rightScrollCtrl,
                       pickerModel.layoutProportions()[2], (index) {
                       pickerModel.setRightIndex(index);
+                    }, (index) {
+                      setState(() {
+                        refreshScrollOffset();
+                        _notifyDateChanged();
+                      });
+                    })
+                  : null,
+            ),
+            Text(
+              pickerModel.rightDivider(),
+              style: theme.itemStyle,
+            ),
+            Container(
+              child: pickerModel.layoutProportions()[3] > 0
+                  ? _renderColumnView(
+                      ValueKey(pickerModel.currentMinuteIndex() * 200 +
+                          pickerModel.currentHourIndex()),
+                      theme,
+                      pickerModel.hourStringAtIndex,
+                      hourScrollCtrl,
+                      pickerModel.layoutProportions()[3], (index) {
+                      pickerModel.setHourIndex(index);
+                    }, (index) {
+                      setState(() {
+                        refreshScrollOffset();
+                        _notifyDateChanged();
+                      });
+                    })
+                  : null,
+            ),
+            Text(
+              pickerModel.timeDivider(),
+              style: theme.itemStyle,
+            ),
+            Container(
+              child: pickerModel.layoutProportions()[4] > 0
+                  ? _renderColumnView(
+                      ValueKey(pickerModel.currentMinuteIndex() * 100 +
+                          pickerModel.currentHourIndex()),
+                      theme,
+                      pickerModel.minuteStringAtIndex,
+                      minuteScrollCtrl,
+                      pickerModel.layoutProportions()[4], (index) {
+                      pickerModel.setMinuteIndex(index);
                     }, (index) {
                       setState(() {
                         refreshScrollOffset();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lunar_datetime_picker/date_init.dart';
 import 'package:flutter_lunar_datetime_picker/flutter_lunar_datetime_picker.dart';
 
 void main() {
@@ -38,7 +39,20 @@ class _HomePageState extends State<HomePage> {
       body: Center(
           child: ElevatedButton(
         onPressed: () {
-          DatePicker.showDatePicker(context);
+          DatePicker.showDatePicker(
+            context,
+            lunarPicker: false,
+            dateInitTime: DateInitTime(
+                currentTime: DateTime.now(),
+                maxTime: DateTime(2026, 12, 12),
+                minTime: DateTime(2018, 3, 4)),
+            onConfirm: (time) {
+              debugPrint(time.toString());
+            },
+            onChanged: (time) {
+              debugPrint("change:${time.toString()}");
+            },
+          );
         },
         child: const Text("选择"),
       )),

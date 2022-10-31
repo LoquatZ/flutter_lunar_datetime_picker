@@ -1,3 +1,4 @@
+import 'package:flutter_lunar_datetime_picker/date_format.dart';
 import 'package:flutter_lunar_datetime_picker/datetime_util.dart';
 import 'package:lunar/lunar.dart';
 
@@ -12,6 +13,10 @@ abstract class BasePickerModel {
   //a getter method for right column data, return null to end list
   String? rightStringAtIndex(int index);
 
+  String? hourStringAtIndex(int index);
+
+  String? minuteStringAtIndex(int index);
+
   //set selected left index
   void setLeftIndex(int index);
 
@@ -20,6 +25,10 @@ abstract class BasePickerModel {
 
   //set selected right index
   void setRightIndex(int index);
+
+  void setHourIndex(int index);
+
+  void setMinuteIndex(int index);
 
   //return current left index
   int currentLeftIndex();
@@ -30,6 +39,10 @@ abstract class BasePickerModel {
   //return current right index
   int currentRightIndex();
 
+  int currentHourIndex();
+
+  int currentMinuteIndex();
+
   //return final time
   DateTime? finalTime();
 
@@ -38,6 +51,8 @@ abstract class BasePickerModel {
 
   //return right divider string
   String rightDivider();
+
+  String timeDivider();
 
   //layout proportions for 3 columns
   List<int> layoutProportions();
@@ -48,10 +63,14 @@ class CommonPickerModel extends BasePickerModel {
   late List<String> leftList;
   late List<String> middleList;
   late List<String> rightList;
+  late List<String> hourList;
+  late List<String> minuteList;
   late DateTime currentTime;
   late int _currentLeftIndex;
   late int _currentMiddleIndex;
   late int _currentRightIndex;
+  late int _currentHourIndex;
+  late int _currentMinuteIndex;
 
   CommonPickerModel();
 
@@ -112,12 +131,47 @@ class CommonPickerModel extends BasePickerModel {
 
   @override
   List<int> layoutProportions() {
-    return [1, 1, 1];
+    return [3, 3, 3, 2, 2];
   }
 
   @override
   DateTime? finalTime() {
     return null;
+  }
+
+  @override
+  int currentHourIndex() {
+    return _currentHourIndex;
+  }
+
+  @override
+  int currentMinuteIndex() {
+    return _currentMinuteIndex;
+  }
+
+  @override
+  String? hourStringAtIndex(int index) {
+    return null;
+  }
+
+  @override
+  String? minuteStringAtIndex(int index) {
+    return null;
+  }
+
+  @override
+  void setHourIndex(int index) {
+    _currentHourIndex = index;
+  }
+
+  @override
+  void setMinuteIndex(int index) {
+    _currentMinuteIndex = index;
+  }
+
+  @override
+  String timeDivider() {
+    return ":";
   }
 }
 
@@ -143,7 +197,6 @@ class DatePickerModel extends CommonPickerModel {
     }
 
     this.currentTime = currentTime;
-
     _fillLeftLists();
     _fillMiddleLists();
     _fillRightLists();
@@ -152,6 +205,8 @@ class DatePickerModel extends CommonPickerModel {
     _currentLeftIndex = this.currentTime.year - this.minTime.year;
     _currentMiddleIndex = this.currentTime.month - minMonth;
     _currentRightIndex = this.currentTime.day - minDay;
+    _currentHourIndex = this.currentTime.hour;
+    _currentMinuteIndex = this.currentTime.minute;
   }
 
   void _fillLeftLists() {
@@ -330,8 +385,30 @@ class DatePickerModel extends CommonPickerModel {
   }
 
   @override
+  String? hourStringAtIndex(int index) {
+    if (index >= 0 && index < 24) {
+      return digits(index, 2);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  String? minuteStringAtIndex(int index) {
+    if (index >= 0 && index < 60) {
+      return digits(index, 2);
+    } else {
+      return null;
+    }
+  }
+
+  @override
   DateTime finalTime() {
-    return currentTime;
+    return currentTime.isUtc
+        ? DateTime.utc(currentTime.year, currentTime.month, currentTime.day,
+            _currentHourIndex, _currentMinuteIndex)
+        : DateTime(currentTime.year, currentTime.month, currentTime.day,
+            _currentHourIndex, _currentMinuteIndex);
   }
 }
 
@@ -369,6 +446,8 @@ class LunarPickerModel extends CommonPickerModel {
     _currentLeftIndex = currentLunarTime.getYear() - minLunarTime.getYear();
     _currentMiddleIndex = _getCurrentMiddleIndex();
     _currentRightIndex = currentLunarTime.getDay() - minDay;
+    _currentHourIndex = this.currentTime.hour;
+    _currentMinuteIndex = this.currentTime.minute;
   }
 
   /// 当前年的最大月份
@@ -630,7 +709,29 @@ class LunarPickerModel extends CommonPickerModel {
   }
 
   @override
+  String? hourStringAtIndex(int index) {
+    if (index >= 0 && index < 24) {
+      return digits(index, 2);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  String? minuteStringAtIndex(int index) {
+    if (index >= 0 && index < 60) {
+      return digits(index, 2);
+    } else {
+      return null;
+    }
+  }
+
+  @override
   DateTime finalTime() {
-    return currentTime;
+    return currentTime.isUtc
+        ? DateTime.utc(currentTime.year, currentTime.month, currentTime.day,
+            _currentHourIndex, _currentMinuteIndex)
+        : DateTime(currentTime.year, currentTime.month, currentTime.day,
+            _currentHourIndex, _currentMinuteIndex);
   }
 }
