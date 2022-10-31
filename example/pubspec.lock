@@ -68,7 +68,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -84,11 +84,9 @@ packages:
   lunar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "6b3b7514369e75f45b9d676772b3ffb317434374"
-      url: "https://github.com/6tail/lunar-flutter.git"
-    source: git
+      name: lunar
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.2.21"
   matcher:
     dependency: transitive

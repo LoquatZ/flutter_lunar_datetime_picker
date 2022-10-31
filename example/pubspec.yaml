@@ -39,8 +39,7 @@ dependencies:
 
   flutter_lunar_datetime_picker:
     path: ../
-  lunar:
-    git: https://github.com/6tail/lunar-flutter.git
+  lunar: ^1.2.21
 
 dev_dependencies:
   flutter_test:

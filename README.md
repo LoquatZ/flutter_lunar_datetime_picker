@@ -7,13 +7,8 @@
 
 ## 引用
 ``` yaml
-flutter_lunar_datetime_picker:
-    git: https://github.com/LoquatZ/flutter_lunar_datetime_picker.git
-lunar:
-    git: https://github.com/6tail/lunar-flutter.git
+flutter_lunar_datetime_picker: ^last_version
 ```
-## 注意
-只对 [lunar_flutter](https://github.com/6tail/lunar-flutter) 进行了 dev_dependencies依赖，如果使用本包，需要单独依赖 
 
 
 ## 使用

@@ -229,7 +229,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   void _notifyDateChanged() {
     if (widget.onChanged != null) {
-      widget.onChanged!(pickerModel.finalTime()!, widget.lunarPicker);
+      widget.onChanged!(pickerModel.finalTime()!, lunarPicker);
     }
   }
 
@@ -511,7 +511,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
                 Navigator.pop(context, pickerModel.finalTime());
                 if (widget.route.onConfirm != null) {
                   widget.route.onConfirm!(
-                      pickerModel.finalTime()!, widget.lunarPicker);
+                      pickerModel.finalTime()!, lunarPicker);
                 }
               },
             ),
