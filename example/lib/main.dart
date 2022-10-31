@@ -46,10 +46,10 @@ class _HomePageState extends State<HomePage> {
                 currentTime: DateTime.now(),
                 maxTime: DateTime(2026, 12, 12),
                 minTime: DateTime(2018, 3, 4)),
-            onConfirm: (time) {
+            onConfirm: (time,luanr) {
               debugPrint(time.toString());
             },
-            onChanged: (time) {
+            onChanged: (time,lunar) {
               debugPrint("change:${time.toString()}");
             },
           );

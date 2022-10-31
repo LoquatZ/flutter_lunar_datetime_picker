@@ -6,7 +6,7 @@ import 'package:flutter_lunar_datetime_picker/date_init.dart';
 import 'package:flutter_lunar_datetime_picker/date_model.dart';
 import 'package:flutter_lunar_datetime_picker/datetime_picker_theme.dart';
 
-typedef DateChangedCallback = Function(DateTime time);
+typedef DateChangedCallback = Function(DateTime time, bool lunar);
 typedef DateCancelledCallback = Function();
 typedef StringAtIndexCallBack = String? Function(int index);
 
@@ -229,7 +229,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   void _notifyDateChanged() {
     if (widget.onChanged != null) {
-      widget.onChanged!(pickerModel.finalTime()!);
+      widget.onChanged!(pickerModel.finalTime()!, widget.lunarPicker);
     }
   }
 
@@ -510,7 +510,8 @@ class _DatePickerState extends State<_DatePickerComponent> {
               onPressed: () {
                 Navigator.pop(context, pickerModel.finalTime());
                 if (widget.route.onConfirm != null) {
-                  widget.route.onConfirm!(pickerModel.finalTime()!);
+                  widget.route.onConfirm!(
+                      pickerModel.finalTime()!, widget.lunarPicker);
                 }
               },
             ),
