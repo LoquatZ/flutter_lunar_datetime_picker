@@ -26,6 +26,7 @@ class DatePicker {
     DatePickerTheme? theme,
     bool? lunarPicker,
     DateInitTime? dateInitTime,
+    bool? showTime,
   }) async {
     return await Navigator.push(
       context,
@@ -39,6 +40,7 @@ class DatePicker {
         dateInitTime: dateInitTime,
         barrierLabel:
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        showTime: showTime,
       ),
     );
   }
@@ -54,6 +56,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     DatePickerTheme? theme,
     this.dateInitTime,
     this.barrierLabel,
+    this.showTime,
     RouteSettings? settings,
   })  : theme = theme ?? const DatePickerTheme(),
         super(settings: settings);
@@ -65,6 +68,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final DatePickerTheme theme;
   final bool? lunarPicker;
   final DateInitTime? dateInitTime;
+  final bool? showTime;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -99,6 +103,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
         route: this,
         lunarPicker: lunarPicker ?? false,
         dateInitTime: dateInitTime,
+        showTime: showTime,
       ),
     );
     return InheritedTheme.captureAll(context, bottomSheet);
@@ -112,6 +117,7 @@ class _DatePickerComponent extends StatefulWidget {
     this.onChanged,
     required this.lunarPicker,
     required this.dateInitTime,
+    required this.showTime,
   }) : super(key: key);
 
   final DateChangedCallback? onChanged;
@@ -121,6 +127,8 @@ class _DatePickerComponent extends StatefulWidget {
   final bool lunarPicker;
 
   final DateInitTime? dateInitTime;
+
+  final bool? showTime;
 
   @override
   State<StatefulWidget> createState() {
@@ -371,50 +379,54 @@ class _DatePickerState extends State<_DatePickerComponent> {
                     })
                   : null,
             ),
-            Text(
-              pickerModel.rightDivider(),
-              style: theme.itemStyle,
-            ),
-            Container(
-              child: pickerModel.layoutProportions()[3] > 0
-                  ? _renderColumnView(
-                      ValueKey(pickerModel.currentMinuteIndex() * 200 +
-                          pickerModel.currentHourIndex()),
-                      theme,
-                      pickerModel.hourStringAtIndex,
-                      hourScrollCtrl,
-                      pickerModel.layoutProportions()[3], (index) {
-                      pickerModel.setHourIndex(index);
-                    }, (index) {
-                      setState(() {
-                        refreshScrollOffset();
-                        _notifyDateChanged();
-                      });
-                    })
-                  : null,
-            ),
-            Text(
-              pickerModel.timeDivider(),
-              style: theme.itemStyle,
-            ),
-            Container(
-              child: pickerModel.layoutProportions()[4] > 0
-                  ? _renderColumnView(
-                      ValueKey(pickerModel.currentMinuteIndex() * 100 +
-                          pickerModel.currentHourIndex()),
-                      theme,
-                      pickerModel.minuteStringAtIndex,
-                      minuteScrollCtrl,
-                      pickerModel.layoutProportions()[4], (index) {
-                      pickerModel.setMinuteIndex(index);
-                    }, (index) {
-                      setState(() {
-                        refreshScrollOffset();
-                        _notifyDateChanged();
-                      });
-                    })
-                  : null,
-            ),
+            if (widget.showTime ?? true)
+              Text(
+                pickerModel.rightDivider(),
+                style: theme.itemStyle,
+              ),
+            if (widget.showTime ?? true)
+              Container(
+                child: pickerModel.layoutProportions()[3] > 0
+                    ? _renderColumnView(
+                        ValueKey(pickerModel.currentMinuteIndex() * 200 +
+                            pickerModel.currentHourIndex()),
+                        theme,
+                        pickerModel.hourStringAtIndex,
+                        hourScrollCtrl,
+                        pickerModel.layoutProportions()[3], (index) {
+                        pickerModel.setHourIndex(index);
+                      }, (index) {
+                        setState(() {
+                          refreshScrollOffset();
+                          _notifyDateChanged();
+                        });
+                      })
+                    : null,
+              ),
+            if (widget.showTime ?? true)
+              Text(
+                pickerModel.timeDivider(),
+                style: theme.itemStyle,
+              ),
+            if (widget.showTime ?? true)
+              Container(
+                child: pickerModel.layoutProportions()[4] > 0
+                    ? _renderColumnView(
+                        ValueKey(pickerModel.currentMinuteIndex() * 100 +
+                            pickerModel.currentHourIndex()),
+                        theme,
+                        pickerModel.minuteStringAtIndex,
+                        minuteScrollCtrl,
+                        pickerModel.layoutProportions()[4], (index) {
+                        pickerModel.setMinuteIndex(index);
+                      }, (index) {
+                        setState(() {
+                          refreshScrollOffset();
+                          _notifyDateChanged();
+                        });
+                      })
+                    : null,
+              ),
           ],
         ),
       ),

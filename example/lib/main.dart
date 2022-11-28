@@ -42,14 +42,15 @@ class _HomePageState extends State<HomePage> {
           DatePicker.showDatePicker(
             context,
             lunarPicker: false,
+            showTime: false,
             dateInitTime: DateInitTime(
                 currentTime: DateTime.now(),
                 maxTime: DateTime(2026, 12, 12),
                 minTime: DateTime(2018, 3, 4)),
-            onConfirm: (time,luanr) {
+            onConfirm: (time, luanr) {
               debugPrint(time.toString());
             },
-            onChanged: (time,lunar) {
+            onChanged: (time, lunar) {
               debugPrint("change:${time.toString()}");
             },
           );

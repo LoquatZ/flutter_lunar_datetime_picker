@@ -5,3 +5,7 @@
 ## 1.0.2
 
 * [fix] luaner callback.
+
+## 1.0.3
+
+* [add] show time check.

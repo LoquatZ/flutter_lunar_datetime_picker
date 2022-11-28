@@ -1,6 +1,6 @@
 name: flutter_lunar_datetime_picker
 description: A Flutter Lunar Datetime Picker.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/LoquatZ/flutter_lunar_datetime_picker
 
 environment:
@@ -16,7 +16,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
