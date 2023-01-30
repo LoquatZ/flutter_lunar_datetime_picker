@@ -4,4 +4,12 @@
 
 ## 1.0.2
 
-* [fix] luaner callback.
+* [fix] Lunar callback.
+
+## 1.0.3
+
+* [add] show time check.
+
+## 1.0.4
+
+* [fix] 农历闰月导致，公历至阳历切换，不正确.

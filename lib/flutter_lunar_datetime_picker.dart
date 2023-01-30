@@ -161,6 +161,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
   void onLunarChange(bool lunarPicker) {
     setState(() {
       this.lunarPicker = lunarPicker;
+      // debugPrint("切换类型:${pickerModel.finalTime().toString()}");
       pickerModel = lunarPicker
           ? LunarPickerModel(
               currentTime: pickerModel.finalTime(),
@@ -172,10 +173,11 @@ class _DatePickerState extends State<_DatePickerComponent> {
               minTime: widget.dateInitTime?.minTime);
     });
     refreshScrollOffset();
+    _notifyDateChanged();
   }
 
   void refreshScrollOffset() {
-//    print('refreshScrollOffset ${widget.pickerModel.currentRightIndex()}');
+   // debugPrint('refreshScrollOffset ${pickerModel.currentMiddleIndex()}');
     leftScrollCtrl = FixedExtentScrollController(
         initialItem: pickerModel.currentLeftIndex());
     middleScrollCtrl = FixedExtentScrollController(
@@ -311,6 +313,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
+            // 年
             Container(
               child: pickerModel.layoutProportions()[0] > 0
                   ? _renderColumnView(
@@ -332,16 +335,19 @@ class _DatePickerState extends State<_DatePickerComponent> {
               pickerModel.leftDivider(),
               style: theme.itemStyle,
             ),
+            // 月
             Container(
               child: pickerModel.layoutProportions()[1] > 0
                   ? _renderColumnView(
-                      ValueKey(pickerModel.currentLeftIndex()),
+                      ValueKey(pickerModel.currentLeftIndex() * 100 +
+                          pickerModel.currentMiddleIndex()),
                       theme,
                       pickerModel.middleStringAtIndex,
                       middleScrollCtrl,
                       pickerModel.layoutProportions()[1], (index) {
                       pickerModel.setMiddleIndex(index);
                     }, (index) {
+                      debugPrint('index: $index');
                       setState(() {
                         refreshScrollOffset();
                         _notifyDateChanged();
@@ -353,6 +359,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               pickerModel.rightDivider(),
               style: theme.itemStyle,
             ),
+            // 日
             Container(
               child: pickerModel.layoutProportions()[2] > 0
                   ? _renderColumnView(
@@ -531,6 +538,7 @@ class _BottomPickerLayout extends SingleChildLayoutDelegate {
   });
 
   final double progress;
+
   // final int? itemCount;
   final bool? showTitleActions;
   final DatePickerTheme theme;

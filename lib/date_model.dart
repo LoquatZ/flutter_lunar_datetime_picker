@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_lunar_datetime_picker/date_format.dart';
 import 'package:flutter_lunar_datetime_picker/datetime_util.dart';
 import 'package:lunar/lunar.dart';
@@ -599,10 +600,9 @@ class LunarPickerModel extends CommonPickerModel {
   //获取当前最小月份指针
   int _getCurrentMiddleIndex() {
     int mCurrentMiddleIndex = 0;
-    bool isLeap = LunarMonth.fromYm(
-                currentLunarTime.getYear(), currentLunarTime.getMonth())
-            ?.isLeap() ??
-        false;
+    /// 检查是否闰月
+    bool isLeap = LunarYear.fromYear(currentLunarTime.getYear()).getLeapMonth() != 0;
+    debugPrint("isLeap:$isLeap");
     if (isLeap) {
       // 当前最小月为闰月
       if (_minMonthOfCurrentYear() < 0) {

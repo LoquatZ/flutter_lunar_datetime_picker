@@ -40,6 +40,7 @@ dependencies:
   flutter_lunar_datetime_picker:
     path: ../
   lunar: ^1.2.21
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
