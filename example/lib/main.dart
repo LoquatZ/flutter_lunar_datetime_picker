@@ -61,12 +61,12 @@ class _HomePageState extends State<HomePage> {
                     ? DateInitTime(
                         currentTime: DateTime.now(),
                         maxTime: DateTime(2026, 12, 12),
-                        minTime: DateTime(1990, 3, 4))
+                        minTime: DateTime(1995, 2, 4))
                     : DateInitTime(
                         currentTime:
                             DateFormat("yyyy-MM-dd h:m").parse(time ?? ""),
                         maxTime: DateTime(2026, 12, 12),
-                        minTime: DateTime(1990, 3, 4)),
+                        minTime: DateTime(1995, 2, 4)),
                 onConfirm: (time, lunar) {
                   debugPrint(time.toString());
                   setState(() {

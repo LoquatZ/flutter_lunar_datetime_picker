@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lunar_datetime_picker/date_init.dart';
 import 'package:flutter_lunar_datetime_picker/date_model.dart';
-import 'package:flutter_lunar_datetime_picker/datetime_picker_theme.dart';
+import 'package:flutter_lunar_datetime_picker/datetime_picker_theme.dart' as picker_theme;
 
 typedef DateChangedCallback = Function(DateTime time, bool lunar);
 typedef DateCancelledCallback = Function();
@@ -23,7 +23,7 @@ class DatePicker {
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
     DateTime? currentTime,
-    DatePickerTheme? theme,
+    picker_theme.DatePickerTheme? theme,
     bool? lunarPicker,
     DateInitTime? dateInitTime,
     bool? showTime,
@@ -53,19 +53,19 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.onConfirm,
     this.onCancel,
     this.lunarPicker,
-    DatePickerTheme? theme,
+    picker_theme.DatePickerTheme? theme,
     this.dateInitTime,
     this.barrierLabel,
     this.showTime,
     RouteSettings? settings,
-  })  : theme = theme ?? const DatePickerTheme(),
+  })  : theme = theme ?? const picker_theme.DatePickerTheme(),
         super(settings: settings);
 
   final bool? showTitleActions;
   final DateChangedCallback? onChanged;
   final DateChangedCallback? onConfirm;
   final DateCancelledCallback? onCancel;
-  final DatePickerTheme theme;
+  final picker_theme.DatePickerTheme theme;
   final bool? lunarPicker;
   final DateInitTime? dateInitTime;
   final bool? showTime;
@@ -169,7 +169,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
   void onLunarChange(bool lunarPicker) {
     setState(() {
       this.lunarPicker = lunarPicker;
-      // debugPrint("切换类型:${pickerModel.finalTime().toString()}");
+      debugPrint("切换类型:${pickerModel.finalTime().toString()}");
       pickerModel = lunarPicker
           ? LunarPickerModel(
               currentTime: pickerModel.finalTime(),
@@ -185,7 +185,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
   }
 
   void refreshScrollOffset() {
-   // debugPrint('refreshScrollOffset ${pickerModel.currentMiddleIndex()}');
+    // debugPrint('refreshScrollOffset ${pickerModel.currentMiddleIndex()}');
     leftScrollCtrl = FixedExtentScrollController(
         initialItem: pickerModel.currentLeftIndex());
     middleScrollCtrl = FixedExtentScrollController(
@@ -210,7 +210,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   @override
   Widget build(BuildContext context) {
-    DatePickerTheme theme = widget.route.theme;
+    picker_theme.DatePickerTheme theme = widget.route.theme;
     return GestureDetector(
       child: AnimatedBuilder(
         animation: widget.route.animation!,
@@ -243,7 +243,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
     }
   }
 
-  Widget _renderPickerView(DatePickerTheme theme) {
+  Widget _renderPickerView(picker_theme.DatePickerTheme theme) {
     Widget itemView = _renderItemView(theme);
     if (widget.route.showTitleActions == true) {
       return Column(
@@ -258,7 +258,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   Widget _renderColumnView(
     ValueKey key,
-    DatePickerTheme theme,
+    picker_theme.DatePickerTheme theme,
     StringAtIndexCallBack stringAtIndexCB,
     ScrollController scrollController,
     int layoutProportion,
@@ -313,7 +313,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
     );
   }
 
-  Widget _renderItemView(DatePickerTheme theme) {
+  Widget _renderItemView(picker_theme.DatePickerTheme theme) {
     return Container(
       color: theme.backgroundColor,
       child: Directionality(
@@ -441,7 +441,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
   }
 
   // Title View
-  Widget _renderTitleActionsView(DatePickerTheme theme) {
+  Widget _renderTitleActionsView(picker_theme.DatePickerTheme theme) {
     const done = "完成";
     const cancel = "取消";
 
@@ -482,6 +482,13 @@ class _DatePickerState extends State<_DatePickerComponent> {
                     onLunarChange(false);
                   },
                   style: ButtonStyle(
+                      shape: MaterialStateProperty.all(
+                          const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(7),
+                          bottomLeft: Radius.circular(7),
+                        ),
+                      )),
                       padding: MaterialStateProperty.all(EdgeInsets.zero),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize:
@@ -501,6 +508,11 @@ class _DatePickerState extends State<_DatePickerComponent> {
                     onLunarChange(true);
                   },
                   style: ButtonStyle(
+                      shape: MaterialStateProperty.all(const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(7),
+                          bottomRight: Radius.circular(7),
+                        ),)),
                       padding: MaterialStateProperty.all(EdgeInsets.zero),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize:
@@ -553,7 +565,7 @@ class _BottomPickerLayout extends SingleChildLayoutDelegate {
 
   // final int? itemCount;
   final bool? showTitleActions;
-  final DatePickerTheme theme;
+  final picker_theme.DatePickerTheme theme;
   final double bottomPadding;
 
   @override

@@ -1,10 +1,10 @@
 name: flutter_lunar_datetime_picker
-description: A Flutter Lunar Datetime Picker.
-version: 1.0.4
+description: A Flutter Lunar Datetime Picker ! You can dynamically switch the selection of the lunar calendar and lunar calendar.
+version: 1.0.5
 homepage: https://github.com/LoquatZ/flutter_lunar_datetime_picker
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.12.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
