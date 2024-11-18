@@ -27,6 +27,7 @@ class DatePicker {
     bool? lunarPicker,
     DateInitTime? dateInitTime,
     bool? showTime,
+    bool? showLunarYear,
   }) async {
     return await Navigator.push(
       context,
@@ -41,6 +42,7 @@ class DatePicker {
         barrierLabel:
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
         showTime: showTime,
+        showLunarYear: showLunarYear,
       ),
     );
   }
@@ -57,6 +59,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.dateInitTime,
     this.barrierLabel,
     this.showTime,
+    this.showLunarYear,
     RouteSettings? settings,
   })  : theme = theme ?? const picker_theme.DatePickerTheme(),
         super(settings: settings);
@@ -69,6 +72,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final bool? lunarPicker;
   final DateInitTime? dateInitTime;
   final bool? showTime;
+  final bool? showLunarYear;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -104,6 +108,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
         lunarPicker: lunarPicker ?? false,
         dateInitTime: dateInitTime,
         showTime: showTime,
+        showLunarYear:showLunarYear ?? false,
       ),
     );
     return InheritedTheme.captureAll(context, bottomSheet);
@@ -118,6 +123,7 @@ class _DatePickerComponent extends StatefulWidget {
     required this.lunarPicker,
     required this.dateInitTime,
     required this.showTime,
+    required this.showLunarYear,
   }) : super(key: key);
 
   final DateChangedCallback? onChanged;
@@ -129,6 +135,8 @@ class _DatePickerComponent extends StatefulWidget {
   final DateInitTime? dateInitTime;
 
   final bool? showTime;
+
+  final bool? showLunarYear;
 
   @override
   State<StatefulWidget> createState() {
@@ -156,7 +164,8 @@ class _DatePickerState extends State<_DatePickerComponent> {
       pickerModel = LunarPickerModel(
           currentTime: widget.dateInitTime?.currentTime,
           maxTime: widget.dateInitTime?.maxTime,
-          minTime: widget.dateInitTime?.minTime);
+          minTime: widget.dateInitTime?.minTime,
+          showLunarYear: widget.showLunarYear,);
     } else {
       pickerModel = DatePickerModel(
           currentTime: widget.dateInitTime?.currentTime,
@@ -174,7 +183,8 @@ class _DatePickerState extends State<_DatePickerComponent> {
           ? LunarPickerModel(
               currentTime: pickerModel.finalTime(),
               maxTime: widget.dateInitTime?.maxTime,
-              minTime: widget.dateInitTime?.minTime)
+              minTime: widget.dateInitTime?.minTime,
+              showLunarYear: widget.showLunarYear)
           : DatePickerModel(
               currentTime: pickerModel.finalTime(),
               maxTime: widget.dateInitTime?.maxTime,

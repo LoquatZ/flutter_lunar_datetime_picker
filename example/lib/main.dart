@@ -57,6 +57,8 @@ class _HomePageState extends State<HomePage> {
               DatePicker.showDatePicker(
                 context,
                 lunarPicker: lunar,
+                showTime: true,
+                showLunarYear: true,
                 dateInitTime: time == null
                     ? DateInitTime(
                         currentTime: DateTime.now(),

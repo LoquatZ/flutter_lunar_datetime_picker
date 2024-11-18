@@ -419,11 +419,13 @@ class LunarPickerModel extends CommonPickerModel {
   late Lunar maxLunarTime;
   late Lunar minLunarTime;
   late Lunar currentLunarTime;
+  late bool showLunarYear;
 
   LunarPickerModel(
-      {DateTime? currentTime, DateTime? maxTime, DateTime? minTime}) {
+      {DateTime? currentTime, DateTime? maxTime, DateTime? minTime,bool? showLunarYear = false}) {
     this.maxTime = maxTime ?? DateTime(2049, 12, 31);
     this.minTime = minTime ?? DateTime(1970, 1, 1);
+    this.showLunarYear = showLunarYear ?? false;
     currentTime = currentTime ?? DateTime.now();
     // 阳历转阴历
     maxLunarTime = Solar.fromDate(this.maxTime).getLunar();
@@ -491,7 +493,11 @@ class LunarPickerModel extends CommonPickerModel {
     leftList = List.generate(
         maxLunarTime.getYear() - minLunarTime.getYear() + 1, (int index) {
       // print('LEFT LIST... ${minTime.year + index}${_localeYear()}');
-      return '${minLunarTime.getYear() + index}年';
+      if (showLunarYear) {
+        return '${getYearInChinese(minLunarTime.getYear()+index)}年';
+      } else {
+        return '${minLunarTime.getYear() + index}年';
+      }
     });
   }
 
@@ -746,5 +752,10 @@ class LunarPickerModel extends CommonPickerModel {
             _currentHourIndex, _currentMinuteIndex)
         : DateTime(currentTime.year, currentTime.month, currentTime.day,
             _currentHourIndex, _currentMinuteIndex);
+  }
+
+  @override
+  List<int> layoutProportions() {
+    return [4, 3, 3, 2, 2];
   }
 }

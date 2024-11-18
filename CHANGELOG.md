@@ -18,3 +18,6 @@
 ## 1.0.5
 * [fix] There is a leap month in the current year, and the leap month is less than the current month, resulting in the switching from the Gregorian calendar to the solar calendar, which is incorrect.
 * [add] Suitable for Flutter 3.x version.
+
+## 1.0.6
+* [add] Lunar type show lunar year.
